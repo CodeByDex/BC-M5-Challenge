@@ -24,6 +24,15 @@ $(function () {
   function RefreshPageContents(){
     UpdateHeader(GetDisplayDate());
     UpdateScheduleStyles(GetDisplayDate());
+    UpdateEvents();
+  };
+
+  function UpdateEvents(){
+    let events = GetScheduledEvents();
+
+    events.forEach(event => {
+      $("#Schedule-Grid [data-time='" + event.EventTime + "'] textarea").text(event.EventText);
+    });
   };
 
   //In future versions will return user selected date vs. current date
@@ -77,31 +86,31 @@ $(function () {
     timeBlock.addClass("row time-block");
     timeBlock.attr("data-time", date.format());
 
-    let hourBlock = document.createElement("div");
+    let hourBlock = $("<div>");
 
-    hourBlock.classList = "col-2 col-md-1 hour text-center py-3";
-    hourBlock.textContent = hour;
+    hourBlock.addClass("col-2 col-md-1 hour text-center py-3");
+    hourBlock.text(hour);
 
     timeBlock.append(hourBlock);
     
-    let textArea = document.createElement("textarea");
+    let textArea = $("<textarea>");
 
-    textArea.classList = "col-8 col-md-10 description";
-    textArea.setAttribute("rows", "3");
+    textArea.addClass("col-8 col-md-10 description");
+    textArea.attr("rows", "3");
 
     timeBlock.append(textArea);
 
-    let button = document.createElement("button");
+    let button = $("<button>");
 
-    button.classList = "btn saveBtn col-2 col-md-1";
-    button.setAttribute("aria-label", "save");
+    button.addClass("btn saveBtn col-2 col-md-1");
+    button.attr("aria-label", "save");
 
     timeBlock.append(button);
 
-    let icon = document.createElement("i");
+    let icon = $("<i>");
 
-    icon.classList = "fas fa-save";
-    icon.setAttribute("aria-hidden", "true");
+    icon.addClass("fas fa-save");
+    icon.attr("aria-hidden", "true");
 
     button.append(icon);
 
@@ -116,3 +125,26 @@ $(function () {
     RefreshPageContents();
   }, 60000)
 });
+
+function GetScheduledEvents(){
+  let eventsString = localStorage.getItem("Events");
+
+  if (eventsString != null) {
+      return JSON.parse(eventsString);
+  } else {
+      return [];
+  }
+};
+
+function CreateScheduledEvent(eventTime, eventText) {
+  let scheduledEvents = GetScheduledEvents();
+  let newEvent = {
+    EventTime: eventTime.format(),
+    EventText: eventText
+  };
+
+  scheduledEvents.push(newEvent);
+
+  localStorage.setItem("Events", JSON.stringify(GetScheduledEvents))
+};
+function UpdateScheduledEvent(eventTime, eventText) {};
