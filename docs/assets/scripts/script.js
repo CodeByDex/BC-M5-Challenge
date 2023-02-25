@@ -1,6 +1,3 @@
-
-
-
 // Wrap all code that interacts with the DOM in a call to jQuery to ensure that
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
@@ -25,10 +22,14 @@ $(function () {
   // TODO: Add code to display the current date in the header of the page.
 
   function RefreshPageContents(){
-    let displayDate = dayjs();
-    UpdateHeader(displayDate);
-    UpdateScheduleStyles(displayDate);
+    UpdateHeader(GetDisplayDate());
+    UpdateScheduleStyles(GetDisplayDate());
   };
+
+  //In future versions will return user selected date vs. current date
+  function GetDisplayDate(){
+    return dayjs();
+  }
 
   function UpdateHeader(displayDate){
     $("#currentDay").text(displayDate.format("dddd MMMM Do, YYYY"));
@@ -37,11 +38,20 @@ $(function () {
   function UpdateScheduleStyles(displayDate){
     $('#Schedule-Grid').children().each(function () {
 
-      if (0 < displayDate.diff(dayjs($(this).attr("data-time")), "hour")) {
+      //set the times to start off to avoide mid hour calcs
+      let hourDiff = displayDate.startOf("hour").diff(dayjs($(this).attr("data-time")).startOf("hour"), "hour")
+      
+      if (0 < hourDiff) {
         $(this).removeClass("future");
+        $(this).removeClass("present");
         $(this).addClass("past");
+      } else if (0 === hourDiff){
+        $(this).removeClass("past");
+        $(this).removeClass("future");
+        $(this).addClass("present");
       } else {
         $(this).removeClass("past");
+        $(this).removeClass("present");
         $(this).addClass("future");
       }
     });    
@@ -49,21 +59,23 @@ $(function () {
 
   function GenerateTimeBlocks(date, fromTime, toTime){
     
+    //clear existing hour blocks
     $("#Schedule-Grid").empty();
     
+
     for (let currentHour = fromTime; currentHour <= toTime; currentHour++) {
       $("#Schedule-Grid").append(GenerateTimeBlock(date, currentHour));      
     }
   };
 
   function GenerateTimeBlock(date, hour) {
-    date = date.set("hour", hour);
+    date = date.startOf("day").set("hour", hour);
 
     let timeBlock = $("<div>");
     
     timeBlock.attr("id", "hour-" + hour);
     timeBlock.addClass("row time-block");
-    timeBlock.attr("data-time", date.toISOString());
+    timeBlock.attr("data-time", date.format());
 
     let hourBlock = document.createElement("div");
 
@@ -96,8 +108,7 @@ $(function () {
     return timeBlock;
   };
 
-  GenerateTimeBlocks(dayjs(), 9, 17);
-
+  GenerateTimeBlocks(GetDisplayDate(), 9, 17);
 
   RefreshPageContents();
 
