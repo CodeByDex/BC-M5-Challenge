@@ -84,7 +84,7 @@ $(function () {
     
     timeBlock.attr("id", "hour-" + hour);
     timeBlock.addClass("row time-block");
-    timeBlock.attr("data-time", date.format());
+    timeBlock.attr("data-time", date.utc().format());
 
     let hourBlock = $("<div>");
 
@@ -148,7 +148,7 @@ function CreateScheduledEvent(eventTime, eventText) {
     EventText: eventText
   };
 
-  let existingIndex = scheduledEvents.findIndex(x => x.EventTime = newEvent.EventTime);
+  let existingIndex = scheduledEvents.findIndex(x => x.EventTime === newEvent.EventTime);
 
   if (existingIndex != -1){
     scheduledEvents[existingIndex] = newEvent
