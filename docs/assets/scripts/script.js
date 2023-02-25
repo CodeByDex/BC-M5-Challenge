@@ -142,12 +142,19 @@ function GetScheduledEvents(){
 
 function CreateScheduledEvent(eventTime, eventText) {
   let scheduledEvents = GetScheduledEvents();
+  
   let newEvent = {
     EventTime: eventTime,
     EventText: eventText
   };
 
-  scheduledEvents.push(newEvent);
+  let existingIndex = scheduledEvents.findIndex(x => x.EventTime = newEvent.EventTime);
+
+  if (existingIndex != -1){
+    scheduledEvents[existingIndex] = newEvent
+  } else {
+    scheduledEvents.push(newEvent);
+  }
 
   localStorage.setItem("Events", JSON.stringify(scheduledEvents))
 
