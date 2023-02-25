@@ -89,7 +89,7 @@ $(function () {
     let hourBlock = $("<div>");
 
     hourBlock.addClass("col-2 col-md-1 hour text-center py-3");
-    hourBlock.text(hour);
+    hourBlock.text(date.format("h A"));
 
     timeBlock.append(hourBlock);
     
