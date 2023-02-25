@@ -119,6 +119,10 @@ $(function () {
 
   GenerateTimeBlocks(GetDisplayDate(), 9, 17);
 
+  $("#Schedule-Grid button").click(function() {
+    CreateScheduledEvent($(this).parent().attr("data-time"), $(this).parent().children("textArea")[0].value);
+  });
+
   RefreshPageContents();
 
   setInterval(() => {
@@ -139,12 +143,23 @@ function GetScheduledEvents(){
 function CreateScheduledEvent(eventTime, eventText) {
   let scheduledEvents = GetScheduledEvents();
   let newEvent = {
-    EventTime: eventTime.format(),
+    EventTime: eventTime,
     EventText: eventText
   };
 
   scheduledEvents.push(newEvent);
 
-  localStorage.setItem("Events", JSON.stringify(GetScheduledEvents))
+  localStorage.setItem("Events", JSON.stringify(scheduledEvents))
+
+  DisplaySavedMessage();
 };
+
+function DisplaySavedMessage(){
+  $("#Save-Message").css("visibility", "visible");
+
+  setTimeout(() => {
+    $("#Save-Message").css("visibility",  "hidden")
+  }, 1000);
+};
+
 function UpdateScheduledEvent(eventTime, eventText) {};
