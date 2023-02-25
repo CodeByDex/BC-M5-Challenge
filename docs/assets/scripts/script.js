@@ -25,15 +25,78 @@ $(function () {
   // TODO: Add code to display the current date in the header of the page.
 
   function RefreshPageContents(){
-    UpdateHeader();
-    UpdateScheduleStyles();
+    let displayDate = dayjs();
+    UpdateHeader(displayDate);
+    UpdateScheduleStyles(displayDate);
   };
 
-  function UpdateHeader(){
-    $("#currentDay").text(dayjs().format("dddd MMMM Do, YYYY"));
+  function UpdateHeader(displayDate){
+    $("#currentDay").text(displayDate.format("dddd MMMM Do, YYYY"));
   };
 
-  function UpdateScheduleStyles(){}; 
+  function UpdateScheduleStyles(displayDate){
+    $('#Schedule-Grid').children().each(function () {
+
+      if (0 < displayDate.diff(dayjs($(this).attr("data-time")), "hour")) {
+        $(this).removeClass("future");
+        $(this).addClass("past");
+      } else {
+        $(this).removeClass("past");
+        $(this).addClass("future");
+      }
+    });    
+  };
+
+  function GenerateTimeBlocks(date, fromTime, toTime){
+    
+    $("#Schedule-Grid").empty();
+    
+    for (let currentHour = fromTime; currentHour <= toTime; currentHour++) {
+      $("#Schedule-Grid").append(GenerateTimeBlock(date, currentHour));      
+    }
+  };
+
+  function GenerateTimeBlock(date, hour) {
+    date = date.set("hour", hour);
+
+    let timeBlock = $("<div>");
+    
+    timeBlock.attr("id", "hour-" + hour);
+    timeBlock.addClass("row time-block");
+    timeBlock.attr("data-time", date.toISOString());
+
+    let hourBlock = document.createElement("div");
+
+    hourBlock.classList = "col-2 col-md-1 hour text-center py-3";
+    hourBlock.textContent = hour;
+
+    timeBlock.append(hourBlock);
+    
+    let textArea = document.createElement("textarea");
+
+    textArea.classList = "col-8 col-md-10 description";
+    textArea.setAttribute("rows", "3");
+
+    timeBlock.append(textArea);
+
+    let button = document.createElement("button");
+
+    button.classList = "btn saveBtn col-2 col-md-1";
+    button.setAttribute("aria-label", "save");
+
+    timeBlock.append(button);
+
+    let icon = document.createElement("i");
+
+    icon.classList = "fas fa-save";
+    icon.setAttribute("aria-hidden", "true");
+
+    button.append(icon);
+
+    return timeBlock;
+  };
+
+  GenerateTimeBlocks(dayjs(), 9, 17);
 
 
   RefreshPageContents();
